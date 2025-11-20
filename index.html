@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoAI: AI-Assisted OpenStreetMap Explorer</title>
+  <meta name="description" content="Explore OpenStreetMap points of interest using natural language queries powered by AI. Find museums, parks, cafes, and more with simple text commands." />
+  <meta name="keywords" content="OpenStreetMap, OSM, AI, geospatial, map, POI, places, natural language, search" />
+  <meta name="author" content="Monica Alegre" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GeoAI: AI-Assisted OpenStreetMap Explorer" />
+  <meta property="og:description" content="Explore OpenStreetMap using natural language queries powered by AI." />
+  <meta property="og:image" content="/thumbnail.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GeoAI: AI-Assisted OpenStreetMap Explorer" />
+  <meta name="twitter:description" content="Explore OpenStreetMap using natural language queries powered by AI." />
+  <meta name="twitter:image" content="/thumbnail.jpg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/osmtogeojson@3.0.0-beta.5/osmtogeojson.js"></script>
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+  <!-- Top bar -->
+  <div id="top-bar">
+    <h1>GeoAI: Assisted OSM Explorer</h1>
+    <button id="info-button" aria-label="About this project">i</button>
+  </div>
+
+  <!-- Info panel -->
+  <div id="info-panel">
+    <button id="close-info" aria-label="Close info panel">×</button>
+    <h2>About this project</h2> 
+    <p>Minimal AI-assisted Point of Interest (POI) Explorer that interacts with OpenStreetMap (OSM) data.</p>
+    <p>The system utilizes a Large Language Model (LLM) to:</p>
+    <ul>
+      <li>Interpret user requests submitted in natural language.</li>
+      <li>Automatically generate the necessary geospatial queries using the Overpass Query Language (OQL) format.</li>
+      <li>Dynamically visualize the results on a map, using coherent categories for the POIs such as <code>restaurant</code>, <code>school</code>, <code>park</code>, etc.</li>
+    </ul>
+    <hr style="border: none; border-top: 1px solid #ccc; margin: 15px 0;">
+    <p style="font-size: 0.9em;">
+      <strong>Author:</strong> Monica Alegre 
+      &nbsp;&middot;&nbsp; 
+      <a href="https://www.linkedin.com/in/malegre-gis" target="_blank">LinkedIn</a>
+      &nbsp;&middot;&nbsp; 
+      <a href="https://www.monica-alegre.me" target="_blank">Website</a>
+    </p>
+  </div>
+
+  <!-- Legend - top left -->
+  <div id="legend"></div>
+
+  <!-- Chat agent - bottom right -->
+  <div id="agent">
+    <div class="agent-header">
+      Example: "museums in Madrid" or "parks in Paris"
+    </div>
+    <div id="chat"></div>
+    <div id="controls">
+      <input id="command" type="text" placeholder="e.g., cafes in Paris" />
+      <button id="send">Send</button>
+    </div>
+  </div>
+
+  <!-- Map -->
+  <div id="map"></div>
+</body>
+
+</html>
