@@ -10,6 +10,9 @@ const map = new maplibregl.Map({
 // Store layers with their markers and metadata
 let layers = {}; // { layerId: { markers: [], name: "", category: "", color: "" } }
 
+// Store last place name to detect if location changed
+let lastPlaceName = null;
+
 // --- Chat display ---
 function addMessage(sender, text) {
   const chat = document.getElementById("chat");
@@ -805,6 +808,17 @@ document.getElementById("send").onclick = async () => {
     const { bbox, center } = await getBboxFromPlace(placeName);
     console.log("=== Place Info ===", { placeName, bbox, center });
 
+    // Check if location changed
+    const locationChanged = lastPlaceName !== null && lastPlaceName.toLowerCase() !== placeName.toLowerCase();
+
+    if (locationChanged) {
+      console.log(`Location changed from "${lastPlaceName}" to "${placeName}" - clearing all layers`);
+      clearAllLayers();
+    }
+
+    // Update last place name
+    lastPlaceName = placeName;
+
     // Replace ALL occurrences of {{bbox}} in the query
     const query = ai.query.replaceAll("{{bbox}}", bbox);
     console.log("=== Final Overpass Query ===", query);
@@ -813,8 +827,16 @@ document.getElementById("send").onclick = async () => {
     const geojson = await fetchOverpass(query);
     console.log("GeoJSON:", geojson);
 
-    // Center map on the place
-    if (center) {
+    // Only center map if location changed (first search or different location)
+    if (!locationChanged && center) {
+      // First search ever, center the map
+      if (Object.keys(layers).length === 0) {
+        map.setCenter(center);
+        map.setZoom(12);
+      }
+      // Otherwise, keep current map position (user might have zoomed manually)
+    } else if (locationChanged && center) {
+      // Location changed, center on new place
       map.setCenter(center);
       map.setZoom(12);
     }
