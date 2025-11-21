@@ -122,23 +122,37 @@ html, body {
   color: #1a1a1a;
 }
 
-/* === Legend - top right === */
-#legend {
+/* === Right sidebar container === */
+#right-sidebar {
   position: absolute;
   top: 70px;
   right: 20px;
+  bottom: 20px;
+  width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+#right-sidebar > * {
+  pointer-events: auto;
+}
+
+/* === Legend - top right === */
+#legend {
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 12px 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  z-index: 50;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-width: 560px;
   align-items: center;
   justify-content: flex-start;
+  flex-shrink: 0;
 }
 
 .legend-item {
@@ -228,11 +242,6 @@ html, body {
 
 /* === Agent panel - bottom right === */
 #agent {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 560px;
-  max-height: 360px;
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
@@ -240,7 +249,8 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 50;
+  flex: 1;
+  min-height: 200px;
 }
 
 /* === Agent header with example === */
@@ -260,7 +270,7 @@ html, body {
   padding: 12px 16px;
   font-size: 13px;
   line-height: 1.5;
-  min-height: 100px;
+  min-height: 0;
   max-height: none;
 }
 
@@ -362,11 +372,15 @@ html, body {
     padding: 16px;
   }
 
-  #legend {
+  #right-sidebar {
     top: 60px;
     right: 10px;
     left: 10px;
-    max-width: none;
+    bottom: 10px;
+    width: auto;
+  }
+
+  #legend {
     padding: 10px;
     gap: 4px;
   }
@@ -393,11 +407,7 @@ html, body {
   }
 
   #agent {
-    bottom: 10px;
-    right: 10px;
-    left: 10px;
-    width: auto;
-    max-height: 240px;
+    min-height: 180px;
   }
 
   .agent-header {
@@ -428,11 +438,7 @@ html, body {
 
 @media (min-width: 769px) and (max-width: 1024px) {
   /* Tablet styles */
-  #legend {
-    max-width: 360px;
-  }
-
-  #agent {
+  #right-sidebar {
     width: 380px;
   }
 }
@@ -486,14 +492,3 @@ html, body {
   transform: scale(1.15) translateZ(0);
 }
 
-/* === Responsive === */
-@media (max-width: 768px) {
-  #agent {
-    width: calc(100% - 40px);
-    max-height: 300px;
-  }
-
-  #top-bar h1 {
-    font-size: 18px;
-  }
-}
