@@ -808,8 +808,11 @@ document.getElementById("send").onclick = async () => {
     const { bbox, center } = await getBboxFromPlace(placeName);
     console.log("=== Place Info ===", { placeName, bbox, center });
 
+    // Check if this is the first search
+    const isFirstSearch = lastPlaceName === null;
+
     // Check if location changed
-    const locationChanged = lastPlaceName !== null && lastPlaceName.toLowerCase() !== placeName.toLowerCase();
+    const locationChanged = !isFirstSearch && lastPlaceName.toLowerCase() !== placeName.toLowerCase();
 
     if (locationChanged) {
       console.log(`Location changed from "${lastPlaceName}" to "${placeName}" - clearing all layers`);
@@ -827,18 +830,13 @@ document.getElementById("send").onclick = async () => {
     const geojson = await fetchOverpass(query);
     console.log("GeoJSON:", geojson);
 
-    // Only center map if location changed (first search or different location)
-    if (!locationChanged && center) {
-      // First search ever, center the map
-      if (Object.keys(layers).length === 0) {
-        map.setCenter(center);
-        map.setZoom(12);
-      }
-      // Otherwise, keep current map position (user might have zoomed manually)
-    } else if (locationChanged && center) {
-      // Location changed, center on new place
+    // Center map only on first search or when location changed
+    if ((isFirstSearch || locationChanged) && center) {
+      console.log(`Centering map on ${placeName}`);
       map.setCenter(center);
       map.setZoom(12);
+    } else {
+      console.log(`Keeping current map position - same location: ${placeName}`);
     }
 
     await renderData(geojson, ai.style_definitions, { place_name: placeName });
