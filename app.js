@@ -63,19 +63,27 @@ async function fetchOverpass(query) {
   // Build proper Overpass query with geometry resolution
   let fullQuery = query.trim();
 
-  // Add [out:json] if not present
+  // Add [out:json] with timeout if not present
   if (!fullQuery.startsWith('[out:json]')) {
-    fullQuery = '[out:json];' + fullQuery;
+    fullQuery = '[out:json][timeout:25];' + fullQuery;
+  } else if (!fullQuery.includes('[timeout:')) {
+    fullQuery = fullQuery.replace('[out:json]', '[out:json][timeout:25]');
   }
 
   // Replace simple 'out body;' with 'out geom;' to get full geometry for ways/relations
+  // Add result limit to prevent timeouts
   fullQuery = fullQuery.replace(/;out body;?$/g, ';out geom;');
+
+  // Add result limit if not present (limit to 500 results)
+  if (!fullQuery.match(/\);\s*\)/)) {
+    fullQuery = fullQuery.replace(/\);$/, ');out geom 500;');
+  }
 
   console.log("Final Overpass Query:", fullQuery);
 
   const res = await fetch(overpassUrl, { method: "POST", body: fullQuery });
   if (!res.ok) {
-    throw new Error("Overpass API error");
+    throw new Error(`Overpass API error: ${res.status} ${res.statusText}`);
   }
   const json = await res.json();
   console.log("Overpass Response (elements):", json.elements?.length || 0);
