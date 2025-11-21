@@ -143,23 +143,23 @@ function removeCategoryLayers(category) {
 function getCategoryFromTags(tags) {
   if (!tags) return "poi";
 
-  // Tourism
-  if (tags.tourism === "museum") return "museum";
-  if (tags.tourism === "hotel") return "hotel";
-  if (tags.tourism === "hostel") return "hostel";
-  if (tags.tourism === "viewpoint") return "viewpoint";
-
-  // Amenities
+  // Amenities (higher priority - more specific)
   if (tags.amenity === "cafe") return "cafe";
   if (tags.amenity === "restaurant") return "restaurant";
+  if (tags.amenity === "bar") return "bar";
   if (tags.amenity === "hospital") return "hospital";
   if (tags.amenity === "school") return "school";
   if (tags.amenity === "pharmacy") return "pharmacy";
   if (tags.amenity === "library") return "library";
   if (tags.amenity === "bank") return "bank";
-  if (tags.amenity === "bar") return "bar";
   if (tags.amenity === "university") return "university";
   if (tags.amenity === "parking") return "parking";
+
+  // Tourism (lower priority)
+  if (tags.tourism === "museum") return "museum";
+  if (tags.tourism === "hotel") return "hotel";
+  if (tags.tourism === "hostel") return "hostel";
+  if (tags.tourism === "viewpoint") return "viewpoint";
 
   // Shops
   if (tags.shop === "supermarket") return "supermarket";
