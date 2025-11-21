@@ -558,7 +558,7 @@ function cleanTags(tags) {
 }
 
 // --- Render GeoJSON with SVG markers ---
-async function renderData(geojson, styleDefinitions, queryInfo) {
+async function renderData(geojson, styleDefinitions, queryInfo, shouldFitBounds = false) {
   if (!geojson || !geojson.features || !geojson.features.length) {
     addMessage("Agent", "No results found.");
     return;
@@ -566,16 +566,18 @@ async function renderData(geojson, styleDefinitions, queryInfo) {
 
   const features = geojson.features;
 
-  // Compute a simple bbox to zoom to
-  const bounds = new maplibregl.LngLatBounds();
-  features.forEach(f => {
-    if (f.geometry && f.geometry.type === "Point") {
-      const [lng, lat] = f.geometry.coordinates;
-      bounds.extend([lng, lat]);
+  // Only fit bounds if explicitly requested (first search or location changed)
+  if (shouldFitBounds) {
+    const bounds = new maplibregl.LngLatBounds();
+    features.forEach(f => {
+      if (f.geometry && f.geometry.type === "Point") {
+        const [lng, lat] = f.geometry.coordinates;
+        bounds.extend([lng, lat]);
+      }
+    });
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds, { padding: 40, maxZoom: 16 });
     }
-  });
-  if (!bounds.isEmpty()) {
-    map.fitBounds(bounds, { padding: 40, maxZoom: 16 });
   }
 
   // Detect category from features (try multiple features to find a valid one)
@@ -830,16 +832,16 @@ document.getElementById("send").onclick = async () => {
     const geojson = await fetchOverpass(query);
     console.log("GeoJSON:", geojson);
 
-    // Center map only on first search or when location changed
-    if ((isFirstSearch || locationChanged) && center) {
-      console.log(`Centering map on ${placeName}`);
-      map.setCenter(center);
-      map.setZoom(12);
+    // Determine if we should fit bounds (only on first search or location change)
+    const shouldFitBounds = isFirstSearch || locationChanged;
+
+    if (shouldFitBounds) {
+      console.log(`Will fit bounds to results for ${placeName}`);
     } else {
       console.log(`Keeping current map position - same location: ${placeName}`);
     }
 
-    await renderData(geojson, ai.style_definitions, { place_name: placeName });
+    await renderData(geojson, ai.style_definitions, { place_name: placeName }, shouldFitBounds);
     addMessage("Agent", `Found ${geojson.features.length} results ✅`);
   } catch (err) {
     console.error(err);
