@@ -597,6 +597,17 @@ async function renderData(geojson, styleDefinitions, queryInfo, shouldFitBounds 
 
   console.log("Detected category:", category, "Color:", color, "Features:", features.length);
 
+  // Check if a layer with same category and place already exists and remove it
+  const existingLayerIds = Object.keys(layers).filter(id => {
+    const layer = layers[id];
+    return layer.category === category && layer.name === `${category} (${queryInfo.place_name || 'unknown'})`;
+  });
+
+  if (existingLayerIds.length > 0) {
+    console.log(`Removing existing layer for ${category} in ${queryInfo.place_name}`);
+    existingLayerIds.forEach(id => removeLayer(id));
+  }
+
   // Create layer ID from category and place
   const layerId = `${category}_${queryInfo.place_name || 'unknown'}_${Date.now()}`;
   const layerName = `${category} (${queryInfo.place_name || 'unknown'})`;
